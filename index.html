@@ -48,13 +48,16 @@
       max-width: 600px;
       z-index: 1;
     }
+
     h2 {
       color: #c2185b;
     }
+
     .message {
       font-size: 18px;
       margin: 10px 0;
     }
+
     #start-btn, #next-btn, #show-gift-btn {
       margin-top: 20px;
       padding: 10px 20px;
@@ -65,27 +68,31 @@
       font-size: 16px;
       cursor: pointer;
     }
+
     canvas {
       display: block;
       background: #fff0f5;
-      border: 2px solid #f06292;
       margin: 20px auto;
       border-radius: 10px;
     }
+
     #score-board {
       font-size: 18px;
       font-weight: bold;
       color: #c2185b;
       margin-bottom: 10px;
     }
+
     #labyrinth {
       display: none;
       text-align: center;
     }
+
     #final-screen {
       display: none;
       text-align: center;
     }
+
     #gift-hint {
       margin-top: 20px;
       font-style: italic;
@@ -93,7 +100,7 @@
   </style>
 </head>
 <body>
-  <!-- Анимационные сердечки для начального экрана и финального экрана -->
+  <!-- Анимационные сердечки для начального экрана -->
   <script>
     function createFloatingHeart() {
       const heart = document.createElement('div');
@@ -105,15 +112,13 @@
       document.body.appendChild(heart);
       setTimeout(() => heart.remove(), 10000);
     }
-    let heartInterval;
 
-    function startHeartAnimation() {
-      heartInterval = setInterval(createFloatingHeart, 500);
-    }
-
-    function stopHeartAnimation() {
-      clearInterval(heartInterval);
-    }
+    // Создание сердечек сразу при загрузке страницы
+    window.onload = function() {
+      for (let i = 0; i < 10; i++) {
+        createFloatingHeart();
+      }
+    };
   </script>
 
   <div id="container">
@@ -128,6 +133,7 @@
 
   <div id="labyrinth">
     <h2>Протяни сердце к подарку 🎁</h2>
+    <p>Используй стрелки на клавиатуре для движения.</p>
     <canvas id="labyrinthCanvas" width="600" height="600"></canvas>
   </div>
 
@@ -200,8 +206,6 @@
           scoreBoard.innerText = `Поймай 10 сердечек: ${score} ❤️`;
           if (score >= 10) {
             cancelAnimationFrame(animationFrameId);
-            canvas.style.display = "none";
-            scoreBoard.style.display = "none";
             nextBtn.style.display = "block";
           }
         }
@@ -210,86 +214,60 @@
 
     startBtn.addEventListener("click", function () {
       container.style.display = "none";
-      scoreBoard.style.display = "block";
       canvas.style.display = "block";
+      scoreBoard.style.display = "block";
       hearts = [];
       score = 0;
       scoreBoard.innerText = `Поймай 10 сердечек: ${score} ❤️`;
-      setInterval(() => hearts.push(createHeart()), 800);
       updateGame();
-      stopHeartAnimation(); // Остановить анимацию сердечек
+      startHeartAnimation(); // Начнем анимацию
     });
 
     nextBtn.addEventListener("click", function () {
+      canvas.style.display = "none";
       nextBtn.style.display = "none";
       labyrinth.style.display = "block";
-      startLabyrinthGame();
     });
 
-    function startLabyrinthGame() {
-      const maze = [
-        "####################",
-        "#@       #        $#",
-        "# ####### ####### ##",
-        "#                 ##",
-        "# ####### ####### ##",
-        "# ####### ####### ##",
-        "#                 ##",
-        "####################",
-      ];
-      const tileSize = 30;
-      let player = { x: 1, y: 1 };
+    // Лабиринт (игра с сердечком и подарком)
+    let player = { x: 0, y: 0, size: 20 };
+    let gift = { x: 580, y: 580, size: 30 };
 
-      function drawMaze() {
-        lctx.clearRect(0, 0, labyrinthCanvas.width, labyrinthCanvas.height);
-        maze.forEach((row, y) => {
-          [...row].forEach((cell, x) => {
-            if (cell === "#") {
-              lctx.fillStyle = "#c2185b";
-              lctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-            } else if (cell === "$") {
-              lctx.font = "24px Arial";
-              lctx.fillText("🎁", x * tileSize + 5, y * tileSize + tileSize - 5);
-            }
-          });
-        });
-        lctx.fillText("❤️", player.x * tileSize + 5, player.y * tileSize + tileSize - 5);
-      }
-
-      function movePlayer(dx, dy) {
-        const newX = player.x + dx;
-        const newY = player.y + dy;
-        const nextCell = maze[newY][newX];
-        if (nextCell !== "#") {
-          player.x = newX;
-          player.y = newY;
-          drawMaze();
-          if (nextCell === "$") {
-            labyrinth.style.display = "none";
-            finalScreen.style.display = "block";
-            startHeartAnimation(); // Запустить анимацию сердечек на финальном экране
-          }
-        }
-      }
-
-      window.addEventListener("keydown", (e) => {
-        switch (e.key) {
-          case "ArrowUp": movePlayer(0, -1); break;
-          case "ArrowDown": movePlayer(0, 1); break;
-          case "ArrowLeft": movePlayer(-1, 0); break;
-          case "ArrowRight": movePlayer(1, 0); break;
-        }
-      });
-
-      drawMaze();
+    function drawLabyrinth() {
+      lctx.clearRect(0, 0, labyrinthCanvas.width, labyrinthCanvas.height);
+      lctx.fillStyle = "#c2185b";
+      lctx.fillRect(player.x, player.y, player.size, player.size);
+      lctx.fillStyle = "#ff9800";
+      lctx.beginPath();
+      lctx.arc(gift.x + gift.size / 2, gift.y + gift.size / 2, gift.size / 2, 0, Math.PI * 2);
+      lctx.fill();
     }
+
+    function movePlayer(event) {
+      switch (event.key) {
+        case "ArrowUp":
+          if (player.y > 0) player.y -= 20;
+          break;
+        case "ArrowDown":
+          if (player.y < labyrinthCanvas.height - player.size) player.y += 20;
+          break;
+        case "ArrowLeft":
+          if (player.x > 0) player.x -= 20;
+          break;
+        case "ArrowRight":
+          if (player.x < labyrinthCanvas.width - player.size) player.x += 20;
+          break;
+      }
+      drawLabyrinth();
+    }
+
+    document.addEventListener("keydown", movePlayer);
 
     showGiftBtn.addEventListener("click", function () {
       giftHint.style.display = "block";
     });
 
-    // Запустить анимацию сердечек на начальном экране
-    startHeartAnimation();
+    drawLabyrinth();
   </script>
 </body>
 </html>
