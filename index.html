@@ -66,6 +66,7 @@
       transform: rotate(45deg);
       cursor: pointer;
       animation: floatUp 10s linear infinite;
+      pointer-events: auto;
     }
 
     .heart::before,
@@ -105,6 +106,10 @@
       transform: scale(1.5);
       transition: transform 0.3s;
     }
+
+    .next-btn {
+      background-color: #4CAF50;
+    }
   </style>
 </head>
 <body>
@@ -128,12 +133,20 @@
     <div id="score" class="message">Очки: 0</div>
   </div>
 
+  <!-- Раздел с поздравлением и кнопкой перехода на следующую страницу -->
+  <div id="congratulations" class="section">
+    <h2>Поздравляю тебя, ты прошел игру! ❤️</h2>
+    <p class="message">Теперь ты готов к продолжению! Ты — невероятный человек, и этот день стал особенным благодаря тебе. Давай идти вперед, мы с тобой!</p>
+    <button class="btn next-btn" onclick="nextPage()">Перейти на следующую страницу</button>
+  </div>
+
   <script>
     let score = 0;
     const heartsContainer = document.getElementById('hearts');
     const scoreDisplay = document.getElementById('score');
     const gameSection = document.getElementById('game');
     const introSection = document.getElementById('intro');
+    const congratulationsSection = document.getElementById('congratulations');
 
     function startGame() {
       introSection.classList.remove('active');
@@ -172,6 +185,20 @@
       updateScore();
       heartsContainer.innerHTML = '';
       createHeart();
+    }
+
+    function endGame() {
+      gameSection.classList.remove('active');
+      congratulationsSection.classList.add('active');
+    }
+
+    function nextPage() {
+      window.location.href = "next-page.html"; // Переход на следующую страницу
+    }
+
+    // Завершаем игру, если достигнут лимит очков
+    if (score >= 10) { // Например, игра заканчивается после 10 очков
+      endGame();
     }
   </script>
 </body>
