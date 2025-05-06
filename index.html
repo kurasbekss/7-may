@@ -31,7 +31,7 @@
       font-size: 18px;
       margin: 10px 0;
     }
-    #start-btn, #next-btn, #to-labyrinth-btn, #show-gift-btn {
+    #start-btn, #next-btn, #show-gift-btn {
       margin-top: 20px;
       padding: 10px 20px;
       background-color: #ec407a;
@@ -48,18 +48,27 @@
       margin: 20px auto;
       border-radius: 10px;
     }
-    #labyrinth, #final-screen {
-      display: none;
-      text-align: center;
-    }
-    #labyrinth canvas {
-      background: #fff;
-    }
     #score-board {
       font-size: 18px;
       font-weight: bold;
       color: #c2185b;
       margin-bottom: 10px;
+    }
+    #labyrinth {
+      display: none;
+      text-align: center;
+    }
+    #labyrinthCanvas {
+      background: #fff;
+      border: 2px solid #f06292;
+    }
+    #final-screen {
+      display: none;
+      text-align: center;
+    }
+    #gift-hint {
+      margin-top: 20px;
+      font-style: italic;
     }
   </style>
 </head>
@@ -67,20 +76,19 @@
   <div id="container">
     <h2>Жаным, поздравляю тебя с 7 мая! ❤️</h2>
     <p class="message">Ты — моя опора, мой лучший друг и вдохновитель. В этот день хочу сказать тебе, как сильно я тебя люблю и ценю. Ты даришь мне радость, тепло и бесконечную поддержку, и я благодарна за каждый момент, проведенный рядом с тобой.</p>
-    <p class="message">Пусть каждый день будет полон любви, счастья и взаимопонимания. А сегодняшний день — это маленький подарок для тебя, чтобы ты почувствовал, как много ты значишь для меня. 💖</p>
     <button id="start-btn">Готов к романтическому приключению?</button>
   </div>
 
   <div id="score-board" style="display:none;">Поймай 10 сердечек: 0 ❤️</div>
   <canvas id="gameCanvas" width="300" height="400" style="display:none;"></canvas>
-  <button id="next-btn" style="display:none;">Следующий сюрприз</button>
+  <button id="next-btn" style="display:none;">Ты молодец, так держать! Перейди ко второй игре</button>
 
-  <div id="labyrinth" style="display:none;">
+  <div id="labyrinth">
     <h2>Протяни сердце к подарку 🎁</h2>
     <canvas id="labyrinthCanvas" width="300" height="400"></canvas>
   </div>
 
-  <div id="final-screen" style="display:none;">
+  <div id="final-screen">
     <h2>Ты молодец, прошёл все игры! 🎉</h2>
     <p class="message">Я в тебе не сомневалась. Твой подарок задерживается, но заберешь его в Алмате, как приедешь. 🎁</p>
     <button id="show-gift-btn">Подсказка: что за подарок?</button>
@@ -102,7 +110,6 @@
 
     let hearts = [], score = 0, animationId;
 
-    // Игровая механика для первой игры
     function startGame() {
       container.style.display = 'none';
       canvas.style.display = 'block';
@@ -167,7 +174,6 @@
       });
     });
 
-    // Игровая механика для лабиринта
     function startLabyrinth() {
       nextBtn.style.display = 'none';
       labyrinthDiv.style.display = 'block';
