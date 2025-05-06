@@ -23,6 +23,7 @@
       animation: float 6s linear infinite;
       opacity: 0.8;
       pointer-events: none;
+      z-index: -1; /* Сердца на фоне */
     }
 
     @keyframes float {
@@ -46,7 +47,7 @@
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 600px;
-      z-index: 1;
+      z-index: 1; /* Элементы на переднем плане */
     }
 
     h2 {
