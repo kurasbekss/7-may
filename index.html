@@ -180,7 +180,7 @@
     function startLabyrinth() {
       nextBtn.style.display = 'none';
       labyrinthDiv.style.display = 'block';
-      document.addEventListener('keydown', moveHeart);
+      document.addEventListener('mousemove', moveHeart);
       drawWalls();
     }
 
@@ -196,18 +196,15 @@
 
     function drawWalls() {
       const labyrinthCtx = labyrinthCanvas.getContext('2d');
-      labyrinthCtx.fillStyle = '#f06292';
+      labyrinthCtx.fillStyle = 'black';
       for (const wall of walls) {
         labyrinthCtx.fillRect(wall.x, wall.y, wall.width, wall.height);
       }
     }
 
     function moveHeart(e) {
-      const step = 10;
-      if (e.key === 'ArrowUp') heartPos.y -= step;
-      if (e.key === 'ArrowDown') heartPos.y += step;
-      if (e.key === 'ArrowLeft') heartPos.x -= step;
-      if (e.key === 'ArrowRight') heartPos.x += step;
+      heartPos.x = e.clientX - labyrinthCanvas.offsetLeft - 15;
+      heartPos.y = e.clientY - labyrinthCanvas.offsetTop - 15;
 
       if (!checkCollision()) {
         heartElem.style.left = `${heartPos.x}px`;
@@ -222,7 +219,7 @@
       ) {
         labyrinthDiv.style.display = 'none';
         finalScreen.style.display = 'block';
-        document.removeEventListener('keydown', moveHeart);
+        document.removeEventListener('mousemove', moveHeart);
       }
     }
 
