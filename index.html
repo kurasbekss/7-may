@@ -65,8 +65,8 @@
       background-color: #e91e63;
       transform: rotate(45deg);
       cursor: pointer;
-      animation: floatUp 10s linear infinite;
       pointer-events: auto;
+      animation: floatUp 10s linear infinite;
     }
 
     .heart::before,
@@ -197,9 +197,11 @@
     }
 
     // Завершаем игру, если достигнут лимит очков
-    if (score >= 10) { // Например, игра заканчивается после 10 очков
-      endGame();
-    }
+    setInterval(() => {
+      if (score >= 10) { // Например, игра заканчивается после 10 очков
+        endGame();
+      }
+    }, 1000);
   </script>
 </body>
 </html>
