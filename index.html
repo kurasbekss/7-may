@@ -15,17 +15,16 @@
       height: 100vh;
       overflow: hidden;
       position: relative;
-      z-index: 1; /* Оставляем для основного контента */
     }
 
-    /* Фон с анимацией сердечек на всю страницу */
+    /* Анимация сердечек */
     .floating-heart {
       position: absolute;
       font-size: 24px;
       animation: float 6s linear infinite;
       opacity: 0.8;
       pointer-events: none;
-      z-index: -2; /* Сердца на фоне, под контентом */
+      z-index: -1; /* Сердца на фоне */
     }
 
     @keyframes float {
@@ -50,7 +49,7 @@
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 600px;
-      z-index: 2; /* Элементы на переднем плане */
+      z-index: 1; /* Элементы на переднем плане */
     }
 
     h2 {
@@ -287,29 +286,30 @@
               lctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             } else if (cell === "$") {
               lctx.font = "24px Arial";
-              lctx.fillText("🎁", x * tileSize + 5, y * tileSize + 25);
+              lctx.fillText("🎁", x * tileSize + 5, y * tileSize + tileSize - 5);
             }
           });
         });
-
-        lctx.fillStyle = "green";
-        lctx.beginPath();
-        lctx.arc(player.x * tileSize + tileSize / 2, player.y * tileSize + tileSize / 2, tileSize / 2, 0, Math.PI * 2);
-        lctx.fill();
+        lctx.fillText("❤️", player.x * tileSize + 5, player.y * tileSize + tileSize - 5);
       }
 
       function movePlayer(dx, dy) {
         const newX = player.x + dx;
         const newY = player.y + dy;
-        if (maze[newY] && maze[newY][newX] !== "#") {
-          player = { x: newX, y: newY };
+        const nextCell = maze[newY][newX];
+        if (nextCell !== "#") {
+          player.x = newX;
+          player.y = newY;
           drawMaze();
-          if (maze[player.y][player.x] === "$") {
+          if (nextCell === "$") {
             labyrinth.style.display = "none";
             finalScreen.style.display = "block";
+            startHeartAnimation(); // Начинаем анимацию сердечек на финальном экране
           }
         }
       }
+
+      drawMaze();
 
       window.addEventListener("keydown", (e) => {
         if (e.key === "ArrowUp") movePlayer(0, -1);
@@ -323,7 +323,7 @@
       giftHint.style.display = "block";
     });
 
-    startHeartAnimation(); // Начинаем анимацию сердечек сразу
+    startHeartAnimation();
   </script>
 </body>
 </html>
