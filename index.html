@@ -14,9 +14,31 @@
       align-items: center;
       height: 100vh;
       overflow: hidden;
+      position: relative;
     }
 
-    /* Блок с контентом */
+    .floating-heart {
+      position: absolute;
+      font-size: 24px;
+      animation: float 6s linear infinite;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) scale(1);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-10vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
     #container {
       text-align: center;
       padding: 20px;
@@ -24,17 +46,15 @@
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 600px;
+      z-index: 1;
     }
-
     h2 {
       color: #c2185b;
     }
-
     .message {
       font-size: 18px;
       margin: 10px 0;
     }
-
     #start-btn, #next-btn, #show-gift-btn {
       margin-top: 20px;
       padding: 10px 20px;
@@ -45,8 +65,6 @@
       font-size: 16px;
       cursor: pointer;
     }
-
-    /* Канвас для игры */
     canvas {
       display: block;
       background: #fff0f5;
@@ -54,39 +72,30 @@
       margin: 20px auto;
       border-radius: 10px;
     }
-
-    /* Таблица счета */
     #score-board {
       font-size: 18px;
       font-weight: bold;
       color: #c2185b;
       margin-bottom: 10px;
     }
-
     #labyrinth {
       display: none;
       text-align: center;
     }
-
     #final-screen {
       display: none;
       text-align: center;
     }
-
     #gift-hint {
       margin-top: 20px;
       font-style: italic;
     }
-
-    #labyrinthCanvas {
-      border: none;
-      background-color: transparent;
-    }
-
-    #labyrinth-instruction {
-      margin-top: 20px;
+    #labyrinth-message {
       font-size: 18px;
+      margin-top: 20px;
+      font-weight: bold;
       color: #c2185b;
+      text-align: center;
     }
   </style>
 </head>
@@ -104,7 +113,7 @@
   <div id="labyrinth">
     <h2>Протяни сердце к подарку 🎁</h2>
     <canvas id="labyrinthCanvas" width="600" height="600"></canvas>
-    <div id="labyrinth-instruction">Найди подарок в лабиринте! Используй клавиши стрелок вниз, влево, вправо, вверх.</div>
+    <div id="labyrinth-message">Найди подарок в лабиринте. Используй клавиши стрелок: вниз, влево, вправо, вверх.</div>
   </div>
 
   <div id="final-screen">
@@ -224,24 +233,22 @@
               lctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             } else if (cell === "$") {
               lctx.font = "24px Arial";
-              lctx.fillText("🎁", x * tileSize + 5, y * tileSize + 25);
+              lctx.fillText("🎁", x * tileSize + 5, y * tileSize + tileSize - 5);
             }
           });
         });
-
-        lctx.fillStyle = "green";
-        lctx.beginPath();
-        lctx.arc(player.x * tileSize + tileSize / 2, player.y * tileSize + tileSize / 2, tileSize / 2, 0, Math.PI * 2);
-        lctx.fill();
+        lctx.fillText("❤️", player.x * tileSize + 5, player.y * tileSize + tileSize - 5);
       }
 
       function movePlayer(dx, dy) {
         const newX = player.x + dx;
         const newY = player.y + dy;
-        if (maze[newY] && maze[newY][newX] !== "#") {
-          player = { x: newX, y: newY };
+        const nextCell = maze[newY][newX];
+        if (nextCell !== "#") {
+          player.x = newX;
+          player.y = newY;
           drawMaze();
-          if (maze[player.y][player.x] === "$") {
+          if (nextCell === "$") {
             labyrinth.style.display = "none";
             finalScreen.style.display = "block";
           }
@@ -249,10 +256,12 @@
       }
 
       window.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowUp") movePlayer(0, -1);
-        if (e.key === "ArrowDown") movePlayer(0, 1);
-        if (e.key === "ArrowLeft") movePlayer(-1, 0);
-        if (e.key === "ArrowRight") movePlayer(1, 0);
+        switch (e.key) {
+          case "ArrowUp": movePlayer(0, -1); break;
+          case "ArrowDown": movePlayer(0, 1); break;
+          case "ArrowLeft": movePlayer(-1, 0); break;
+          case "ArrowRight": movePlayer(1, 0); break;
+        }
       });
 
       drawMaze();
