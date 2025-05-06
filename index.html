@@ -181,6 +181,7 @@
       nextBtn.style.display = 'none';
       labyrinthDiv.style.display = 'block';
       document.addEventListener('keydown', moveHeart);
+      drawWalls();
     }
 
     let heartPos = { x: 10, y: 10 };
@@ -192,6 +193,14 @@
       { x: 100, y: 100, width: 20, height: 200 },
       { x: 200, y: 100, width: 20, height: 200 }
     ];
+
+    function drawWalls() {
+      const labyrinthCtx = labyrinthCanvas.getContext('2d');
+      labyrinthCtx.fillStyle = '#f06292';
+      for (const wall of walls) {
+        labyrinthCtx.fillRect(wall.x, wall.y, wall.width, wall.height);
+      }
+    }
 
     function moveHeart(e) {
       const step = 10;
