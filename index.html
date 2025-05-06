@@ -176,7 +176,7 @@
       nextBtn.style.display = 'none';
       labyrinthDiv.style.display = 'block';
       const lctx = labyrinthCanvas.getContext('2d');
-      let heart = { x: 10, y: 10, size: 20, emoji: '❤️' }; // Эмодзи для сердца
+      let heart = { x: 10, y: 10, size: 30, emoji: '❤️' }; // Эмодзи для сердца
       const gift = { x: 140, y: 180, size: 40, emoji: '🎁' }; // Эмодзи для подарка
       const walls = [
         { x: 50, y: 0, width: 200, height: 10 },
@@ -211,7 +211,7 @@
           let newX = e.clientX - rect.left - offsetX;
           let newY = e.clientY - rect.top - offsetY;
 
-          // Обработаем столкновения с стенами
+          // Обрабатываем столкновения с стенами
           for (const wall of walls) {
             if (newX + heart.size > wall.x && newX < wall.x + wall.width &&
                 newY + heart.size > wall.y && newY < wall.y + wall.height) {
