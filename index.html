@@ -135,12 +135,12 @@
       heart.style.fontSize = `${Math.random() * 20 + 16}px`;
       heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
       document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 100000);
+      setTimeout(() => heart.remove(), 1000000);
     }
 
     // Запуск анимации
     function startHeartAnimation() {
-      heartInterval = setInterval(createFloatingHeart, 500);
+      heartInterval = setInterval(createFloatingHeart, 0);
     }
 
     // Остановка анимации
