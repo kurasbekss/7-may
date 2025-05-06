@@ -55,7 +55,7 @@
       height: 100%;
       pointer-events: none;
       overflow: hidden;
-      z-index: -1;
+      z-index: 1;
     }
 
     .heart {
@@ -66,6 +66,7 @@
       transform: rotate(45deg);
       cursor: pointer;
       pointer-events: auto;
+      z-index: 2; /* Убедитесь, что сердца находятся поверх других элементов */
       animation: floatUp 5s linear infinite;
     }
 
