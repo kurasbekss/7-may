@@ -304,4 +304,26 @@
           if (nextCell === "$") {
             labyrinth.style.display = "none";
             finalScreen.style.display = "block";
-            startHeartAnimation();
+            startHeartAnimation(); // Начинаем анимацию сердечек на финальном экране
+          }
+        }
+      }
+
+      drawMaze();
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp") movePlayer(0, -1);
+        if (e.key === "ArrowDown") movePlayer(0, 1);
+        if (e.key === "ArrowLeft") movePlayer(-1, 0);
+        if (e.key === "ArrowRight") movePlayer(1, 0);
+      });
+    }
+
+    showGiftBtn.addEventListener("click", function () {
+      giftHint.style.display = "block";
+    });
+
+    startHeartAnimation();
+  </script>
+</body>
+</html>
