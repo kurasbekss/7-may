@@ -93,7 +93,7 @@
   </style>
 </head>
 <body>
-  <!-- Анимационные сердечки -->
+  <!-- Анимационные сердечки для начального экрана и финального экрана -->
   <script>
     function createFloatingHeart() {
       const heart = document.createElement('div');
@@ -105,7 +105,15 @@
       document.body.appendChild(heart);
       setTimeout(() => heart.remove(), 10000);
     }
-    setInterval(createFloatingHeart, 500);
+    let heartInterval;
+
+    function startHeartAnimation() {
+      heartInterval = setInterval(createFloatingHeart, 500);
+    }
+
+    function stopHeartAnimation() {
+      clearInterval(heartInterval);
+    }
   </script>
 
   <div id="container">
@@ -115,12 +123,12 @@
   </div>
 
   <div id="score-board" style="display:none;">Поймай 10 сердечек: 0 ❤️</div>
-  <canvas id="gameCanvas" width="300" height="400" style="display:none;"></canvas>
+  <canvas id="gameCanvas" width="400" height="500" style="display:none;"></canvas>
   <button id="next-btn" style="display:none;">Ты молодец, так держать! Перейди ко второй игре</button>
 
   <div id="labyrinth">
     <h2>Протяни сердце к подарку 🎁</h2>
-    <canvas id="labyrinthCanvas" width="300" height="400"></canvas>
+    <canvas id="labyrinthCanvas" width="600" height="600"></canvas>
   </div>
 
   <div id="final-screen">
@@ -209,6 +217,7 @@
       scoreBoard.innerText = `Поймай 10 сердечек: ${score} ❤️`;
       setInterval(() => hearts.push(createHeart()), 800);
       updateGame();
+      stopHeartAnimation(); // Остановить анимацию сердечек
     });
 
     nextBtn.addEventListener("click", function () {
@@ -228,7 +237,7 @@
         "#                 ##",
         "####################",
       ];
-      const tileSize = 15;
+      const tileSize = 30;
       let player = { x: 1, y: 1 };
 
       function drawMaze() {
@@ -239,12 +248,12 @@
               lctx.fillStyle = "#c2185b";
               lctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             } else if (cell === "$") {
-              lctx.font = "14px Arial";
-              lctx.fillText("🎁", x * tileSize, y * tileSize + tileSize);
+              lctx.font = "24px Arial";
+              lctx.fillText("🎁", x * tileSize + 5, y * tileSize + tileSize - 5);
             }
           });
         });
-        lctx.fillText("❤️", player.x * tileSize, player.y * tileSize + tileSize);
+        lctx.fillText("❤️", player.x * tileSize + 5, player.y * tileSize + tileSize - 5);
       }
 
       function movePlayer(dx, dy) {
@@ -258,6 +267,7 @@
           if (nextCell === "$") {
             labyrinth.style.display = "none";
             finalScreen.style.display = "block";
+            startHeartAnimation(); // Запустить анимацию сердечек на финальном экране
           }
         }
       }
@@ -277,6 +287,9 @@
     showGiftBtn.addEventListener("click", function () {
       giftHint.style.display = "block";
     });
+
+    // Запустить анимацию сердечек на начальном экране
+    startHeartAnimation();
   </script>
 </body>
 </html>
