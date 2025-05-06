@@ -14,31 +14,7 @@
       align-items: center;
       height: 100vh;
       overflow: hidden;
-      position: relative;
     }
-
-    .floating-heart {
-      position: absolute;
-      font-size: 24px;
-      animation: float 6s linear infinite;
-      opacity: 0.8;
-      pointer-events: none;
-    }
-
-    @keyframes float {
-      0% {
-        transform: translateY(100vh) scale(1);
-        opacity: 0;
-      }
-      10% {
-        opacity: 0.8;
-      }
-      100% {
-        transform: translateY(-10vh) scale(1.5);
-        opacity: 0;
-      }
-    }
-
     #container {
       text-align: center;
       padding: 20px;
@@ -46,18 +22,15 @@
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 600px;
-      z-index: 1;
+      display: none;
     }
-
     h2 {
       color: #c2185b;
     }
-
     .message {
       font-size: 18px;
       margin: 10px 0;
     }
-
     #start-btn, #next-btn, #show-gift-btn {
       margin-top: 20px;
       padding: 10px 20px;
@@ -68,31 +41,35 @@
       font-size: 16px;
       cursor: pointer;
     }
-
     canvas {
       display: block;
       background: #fff0f5;
+      border: 2px solid #f06292;
       margin: 20px auto;
       border-radius: 10px;
     }
-
     #score-board {
       font-size: 18px;
       font-weight: bold;
       color: #c2185b;
       margin-bottom: 10px;
     }
-
     #labyrinth {
       display: none;
       text-align: center;
     }
-
+    #labyrinthCanvas {
+      position: relative;
+      width: 300px;
+      height: 400px;
+      background: #fff;
+      border: 2px solid #f06292;
+      margin: 20px auto;
+    }
     #final-screen {
       display: none;
       text-align: center;
     }
-
     #gift-hint {
       margin-top: 20px;
       font-style: italic;
@@ -100,27 +77,6 @@
   </style>
 </head>
 <body>
-  <!-- Анимационные сердечки для начального экрана -->
-  <script>
-    function createFloatingHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('floating-heart');
-      heart.textContent = '❤️';
-      heart.style.left = `${Math.random() * 100}vw`;
-      heart.style.fontSize = `${Math.random() * 20 + 16}px`;
-      heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 10000);
-    }
-
-    // Создание сердечек сразу при загрузке страницы
-    window.onload = function() {
-      for (let i = 0; i < 10; i++) {
-        createFloatingHeart();
-      }
-    };
-  </script>
-
   <div id="container">
     <h2>Жаным, поздравляю тебя с 7 мая! ❤️</h2>
     <p class="message">Ты — моя опора, мой лучший друг и вдохновитель. В этот день хочу сказать тебе, как сильно я тебя люблю и ценю. Ты даришь мне радость, тепло и бесконечную поддержку, и я благодарна за каждый момент, проведенный рядом с тобой.</p>
@@ -128,146 +84,166 @@
   </div>
 
   <div id="score-board" style="display:none;">Поймай 10 сердечек: 0 ❤️</div>
-  <canvas id="gameCanvas" width="400" height="500" style="display:none;"></canvas>
+  <canvas id="gameCanvas" width="300" height="400" style="display:none;"></canvas>
   <button id="next-btn" style="display:none;">Ты молодец, так держать! Перейди ко второй игре</button>
 
   <div id="labyrinth">
     <h2>Протяни сердце к подарку 🎁</h2>
-    <p>Используй стрелки на клавиатуре для движения.</p>
-    <canvas id="labyrinthCanvas" width="600" height="600"></canvas>
+    <canvas id="labyrinthCanvas" width="300" height="400"></canvas>
   </div>
 
   <div id="final-screen">
     <h2>Ты молодец, прошёл все игры! 🎉</h2>
-    <p class="message">Я в тебе не сомневалась. Твой подарок задерживается, но заберешь его в Алмате, как приедешь. 🎁</p>
-    <p class="message">Ты — невероятный человек, и каждый день с тобой — это праздник. Поздравляю тебя с этим особенным днем, и я счастлива, что ты есть. Ты — мой защитник хорошего настроения, вдохновитель, и человек, рядом с которым мечты становятся планами. Твой подарок немного задержался, но ты сможешь получить его в Алматы, когда приедешь. А пока — лови мою любовь через экран 💖 С 7 мая, жаным! ❤️</p>
+    <p class="message">Я в тебе не сомневалась. Твой подарок немного задержался, но ты сможешь получить его в Алматы, когда приедешь 🎁 А пока — лови мою любовь через экран 💖</p>
+    <p class="message">Ты — невероятный человек, и каждый день с тобой — это праздник. Поздравляю тебя с этим особенным днем, и я счастлива, что ты есть. Ты — мой защитник хорошего настроения, вдохновитель, и человек, рядом с которым мечты становятся планами. С 7 мая, жаным! ❤️</p>
     <button id="show-gift-btn">Подсказка: что за подарок?</button>
-    <p id="gift-hint" style="display:none;">Это то, в чём ты будешь отлично выглядеть в Париже, куда мы скоро собираемся. Жду нашей встречи ❤️</p>
+    <p id="gift-hint" style="display:none;">Это то, в чём ты будешь отлично выглядеть в Париже. Жду нашей встречи ❤️</p>
   </div>
 
   <script>
-    const startBtn = document.getElementById("start-btn");
-    const container = document.getElementById("container");
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const scoreBoard = document.getElementById("score-board");
-    const nextBtn = document.getElementById("next-btn");
-    const labyrinth = document.getElementById("labyrinth");
-    const finalScreen = document.getElementById("final-screen");
-    const labyrinthCanvas = document.getElementById("labyrinthCanvas");
-    const lctx = labyrinthCanvas.getContext("2d");
-    const showGiftBtn = document.getElementById("show-gift-btn");
-    const giftHint = document.getElementById("gift-hint");
+    const container = document.getElementById('container');
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const nextBtn = document.getElementById('next-btn');
+    const labyrinthDiv = document.getElementById('labyrinth');
+    const labyrinthCanvas = document.getElementById('labyrinthCanvas');
+    const finalScreen = document.getElementById('final-screen');
+    const showGiftBtn = document.getElementById('show-gift-btn');
+    const giftHint = document.getElementById('gift-hint');
+    const scoreBoard = document.getElementById('score-board');
 
-    let hearts = [];
-    let score = 0;
-    let animationFrameId;
+    let hearts = [], score = 0, animationId;
 
-    function createHeart() {
-      return {
-        x: Math.random() * canvas.width,
-        y: -20,
-        speed: Math.random() * 2 + 1,
-        size: 20,
-      };
+    function startGame() {
+      container.style.display = 'none';
+      canvas.style.display = 'block';
+      scoreBoard.style.display = 'block';
+      score = 0;
+      updateScore();
+
+      hearts = [];
+      for (let i = 0; i < 10; i++) {
+        hearts.push({
+          x: Math.random() * 270,
+          y: Math.random() * -400,
+          speed: 2 + Math.random() * 3,
+          size: 30
+        });
+      }
+      animateHearts();
     }
 
-    function drawHeart(heart) {
-      ctx.font = `${heart.size}px Arial`;
-      ctx.fillText("❤️", heart.x, heart.y);
+    function updateScore() {
+      scoreBoard.textContent = Поймай 10 сердечек: ${score} ❤️;
     }
 
-    function updateGame() {
+    function animateHearts() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      hearts.forEach((heart, index) => {
-        heart.y += heart.speed;
-        drawHeart(heart);
-        if (heart.y > canvas.height) {
-          hearts.splice(index, 1);
+      for (let h of hearts) {
+        ctx.font = '30px Arial';
+        ctx.fillText('❤️', h.x, h.y);
+        h.y += h.speed;
+      }
+      hearts = hearts.filter(h => h.y < canvas.height);
+      if (score < 10) {
+        while (hearts.length < 10) {
+          hearts.push({ x: Math.random() * 270, y: Math.random() * -50, speed: 2 + Math.random() * 3, size: 30 });
         }
-      });
-      animationFrameId = requestAnimationFrame(updateGame);
+        animationId = requestAnimationFrame(animateHearts);
+      } else {
+        cancelAnimationFrame(animationId);
+        canvas.style.display = 'none';
+        scoreBoard.style.display = 'none';
+        nextBtn.style.display = 'inline-block';
+      }
     }
 
-    canvas.addEventListener("click", function (e) {
+    canvas.addEventListener('click', function (e) {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-
-      hearts.forEach((heart, index) => {
-        if (
-          x > heart.x &&
-          x < heart.x + heart.size &&
-          y > heart.y - heart.size &&
-          y < heart.y
-        ) {
+      hearts = hearts.filter(h => {
+        if (x >= h.x && x <= h.x + h.size && y >= h.y && y <= h.y + h.size) {
           score++;
-          hearts.splice(index, 1);
-          scoreBoard.innerText = `Поймай 10 сердечек: ${score} ❤️`;
-          if (score >= 10) {
-            cancelAnimationFrame(animationFrameId);
-            nextBtn.style.display = "block";
-          }
+          updateScore();
+          return false;
         }
+        return true;
       });
     });
 
-    startBtn.addEventListener("click", function () {
-      container.style.display = "none";
-      canvas.style.display = "block";
-      scoreBoard.style.display = "block";
-      hearts = [];
-      score = 0;
-      scoreBoard.innerText = `Поймай 10 сердечек: ${score} ❤️`;
-      updateGame();
-      startHeartAnimation(); // Начнем анимацию
-    });
+    function startLabyrinth() {
+      nextBtn.style.display = 'none';
+      labyrinthDiv.style.display = 'block';
+      const lctx = labyrinthCanvas.getContext('2d');
+      let heart = { x: 10, y: 10, size: 30, emoji: '❤️' }; // Эмодзи для сердца
+      const gift = { x: 140, y: 180, size: 40, emoji: '🎁' }; // Эмодзи для подарка
+      const walls = [
+        { x: 50, y: 0, width: 200, height: 10 },
+        { x: 50, y: 390, width: 200, height: 10 },
+        { x: 0, y: 50, width: 10, height: 300 },
+        { x: 290, y: 50, width: 10, height: 300 },
+        { x: 50, y: 150, width: 200, height: 10 },
+        { x: 100, y: 50, width: 10, height: 100 },
+        { x: 100, y: 250, width: 10, height: 100 },
+        { x: 200, y: 150, width: 10, height: 100 }
+      ];
 
-    nextBtn.addEventListener("click", function () {
-      canvas.style.display = "none";
-      nextBtn.style.display = "none";
-      labyrinth.style.display = "block";
-    });
+      function drawLabyrinth() {
+        lctx.clearRect(0, 0, 300, 400);
+        lctx.font = '30px Arial';
+        lctx.fillText(heart.emoji, heart.x, heart.y); // Рисуем сердце
+        lctx.fillText(gift.emoji, gift.x, gift.y); // Рисуем подарок
 
-    // Лабиринт (игра с сердечком и подарком)
-    let player = { x: 0, y: 0, size: 20 };
-    let gift = { x: 580, y: 580, size: 30 };
-
-    function drawLabyrinth() {
-      lctx.clearRect(0, 0, labyrinthCanvas.width, labyrinthCanvas.height);
-      lctx.fillStyle = "#c2185b";
-      lctx.fillRect(player.x, player.y, player.size, player.size);
-      lctx.fillStyle = "#ff9800";
-      lctx.beginPath();
-      lctx.arc(gift.x + gift.size / 2, gift.y + gift.size / 2, gift.size / 2, 0, Math.PI * 2);
-      lctx.fill();
-    }
-
-    function movePlayer(event) {
-      switch (event.key) {
-        case "ArrowUp":
-          if (player.y > 0) player.y -= 20;
-          break;
-        case "ArrowDown":
-          if (player.y < labyrinthCanvas.height - player.size) player.y += 20;
-          break;
-        case "ArrowLeft":
-          if (player.x > 0) player.x -= 20;
-          break;
-        case "ArrowRight":
-          if (player.x < labyrinthCanvas.width - player.size) player.x += 20;
-          break;
+        lctx.fillStyle = 'black';
+        // Отрисовка стен
+        for (const wall of walls) {
+          lctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+        }
       }
+
+      labyrinthCanvas.addEventListener('mousedown', function (e) {
+        const rect = labyrinthCanvas.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left - heart.x;
+        const offsetY = e.clientY - rect.top - heart.y;
+
+        function onMouseMove(e) {
+          let newX = e.clientX - rect.left - offsetX;
+          let newY = e.clientY - rect.top - offsetY;
+
+          // Обрабатываем столкновения с стенами
+          for (const wall of walls) {
+            if (newX + heart.size > wall.x && newX < wall.x + wall.width &&
+                newY + heart.size > wall.y && newY < wall.y + wall.height) {
+              return;
+            }
+          }
+
+          heart.x = newX;
+          heart.y = newY;
+          drawLabyrinth();
+
+          // Проверка попадания в подарок
+          if (heart.x + heart.size > gift.x && heart.x < gift.x + gift.size &&
+              heart.y + heart.size > gift.y && heart.y < gift.y + gift.size) {
+            labyrinthDiv.style.display = 'none';
+            finalScreen.style.display = 'block';
+          }
+        }
+
+        labyrinthCanvas.addEventListener('mousemove', onMouseMove);
+        labyrinthCanvas.addEventListener('mouseup', function () {
+          labyrinthCanvas.removeEventListener('mousemove', onMouseMove);
+        }, { once: true });
+      });
+
       drawLabyrinth();
     }
 
-    document.addEventListener("keydown", movePlayer);
-
-    showGiftBtn.addEventListener("click", function () {
-      giftHint.style.display = "block";
-    });
-
-    drawLabyrinth();
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    nextBtn.addEventListener('click', startLabyrinth);
+    showGiftBtn.addEventListener('click', () => giftHint.style.display = 'block');
+    window.onload = () => container.style.display = 'block';
   </script>
 </body>
 </html>
