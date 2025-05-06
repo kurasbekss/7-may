@@ -89,10 +89,7 @@
 
   <div id="labyrinth">
     <h2>Протяни сердце к подарку 🎁</h2>
-    <div id="labyrinthCanvas">
-      <span id="heart" style="position:absolute; font-size:30px; left:10px; top:10px;">❤️</span>
-      <span id="gift" style="position:absolute; font-size:40px; left:140px; top:180px;">🎁</span>
-    </div>
+    <canvas id="labyrinthCanvas" width="300" height="400"></canvas>
   </div>
 
   <div id="final-screen">
@@ -114,8 +111,6 @@
     const showGiftBtn = document.getElementById('show-gift-btn');
     const giftHint = document.getElementById('gift-hint');
     const scoreBoard = document.getElementById('score-board');
-    const heartElem = document.getElementById('heart');
-    const giftElem = document.getElementById('gift');
 
     let hearts = [], score = 0, animationId;
 
@@ -180,70 +175,44 @@
     function startLabyrinth() {
       nextBtn.style.display = 'none';
       labyrinthDiv.style.display = 'block';
-      document.addEventListener('mousemove', moveHeart);
-      drawWalls();
-    }
+      const lctx = labyrinthCanvas.getContext('2d');
+      let heart = { x: 10, y: 10, size: 20 };
+      const gift = { x: 140, y: 180, size: 40 };
+      const walls = [
+        { x: 50, y: 0, width: 200, height: 10 },
+        { x: 50, y: 390, width: 200, height: 10 },
+        { x: 0, y: 50, width: 10, height: 300 },
+        { x: 290, y: 50, width: 10, height: 300 },
+        { x: 50, y: 150, width: 200, height: 10 }
+      ];
 
-    let heartPos = { x: 10, y: 10 };
-    const walls = [
-      { x: 0, y: 0, width: 20, height: 400 },
-      { x: 0, y: 0, width: 300, height: 20 },
-      { x: 280, y: 0, width: 20, height: 400 },
-      { x: 0, y: 380, width: 300, height: 20 },
-      { x: 100, y: 100, width: 20, height: 200 },
-      { x: 200, y: 100, width: 20, height: 200 }
-    ];
+      function drawLabyrinth() {
+        lctx.clearRect(0, 0, 300, 400);
+        lctx.fillStyle = 'red';
+        lctx.beginPath();
+        lctx.arc(heart.x + 10, heart.y + 10, 10, 0, Math.PI * 2);
+        lctx.fill();
 
-    function drawWalls() {
-      const labyrinthCtx = labyrinthCanvas.getContext('2d');
-      labyrinthCtx.fillStyle = 'black';
-      for (const wall of walls) {
-        labyrinthCtx.fillRect(wall.x, wall.y, wall.width, wall.height);
-      }
-    }
+        lctx.fillStyle = 'gold';
+        lctx.fillRect(gift.x, gift.y, gift.size, gift.size);
 
-    function moveHeart(e) {
-      heartPos.x = e.clientX - labyrinthCanvas.offsetLeft - 15;
-      heartPos.y = e.clientY - labyrinthCanvas.offsetTop - 15;
-
-      if (!checkCollision()) {
-        heartElem.style.left = `${heartPos.x}px`;
-        heartElem.style.top = `${heartPos.y}px`;
-      }
-
-      if (
-        heartPos.x + 30 > 140 &&
-        heartPos.x < 140 + 40 &&
-        heartPos.y + 30 > 180 &&
-        heartPos.y < 180 + 40
-      ) {
-        labyrinthDiv.style.display = 'none';
-        finalScreen.style.display = 'block';
-        document.removeEventListener('mousemove', moveHeart);
-      }
-    }
-
-    function checkCollision() {
-      for (const wall of walls) {
-        if (
-          heartPos.x + 30 > wall.x &&
-          heartPos.x < wall.x + wall.width &&
-          heartPos.y + 30 > wall.y &&
-          heartPos.y < wall.y + wall.height
-        ) {
-          return true;
+        lctx.fillStyle = 'black';
+        for (const wall of walls) {
+          lctx.fillRect(wall.x, wall.y, wall.width, wall.height);
         }
       }
-      return false;
-    }
 
-    document.getElementById('start-btn').addEventListener('click', startGame);
-    nextBtn.addEventListener('click', startLabyrinth);
-    showGiftBtn.addEventListener('click', () => giftHint.style.display = 'block');
+      labyrinthCanvas.addEventListener('mousedown', function (e) {
+        const rect = labyrinthCanvas.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left - heart.x;
+        const offsetY = e.clientY - rect.top - heart.y;
 
-    window.onload = () => {
-      container.style.display = 'block';
-    };
-  </script>
-</body>
-</html>
+        function onMouseMove(e) {
+          let newX = e.clientX - rect.left - offsetX;
+          let newY = e.clientY - rect.top - offsetY;
+
+          // Обработаем столкновения с стенами
+          for (const wall of walls) {
+            if (
+              newX + heart.size > wall.x &&
+              newX < wall
