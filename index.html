@@ -176,25 +176,24 @@
       nextBtn.style.display = 'none';
       labyrinthDiv.style.display = 'block';
       const lctx = labyrinthCanvas.getContext('2d');
-      let heart = { x: 10, y: 10, size: 20 };
-      const gift = { x: 140, y: 180, size: 40 };
+      let heart = { x: 10, y: 10, size: 20, emoji: '❤️' }; // Сменили фигуру на эмодзи
+      const gift = { x: 140, y: 180, size: 40, emoji: '🎁' }; // Эмодзи для подарка
       const walls = [
         { x: 50, y: 0, width: 200, height: 10 },
         { x: 50, y: 390, width: 200, height: 10 },
         { x: 0, y: 50, width: 10, height: 300 },
         { x: 290, y: 50, width: 10, height: 300 },
-        { x: 50, y: 150, width: 200, height: 10 }
+        { x: 50, y: 150, width: 200, height: 10 },
+        { x: 100, y: 50, width: 10, height: 100 },
+        { x: 100, y: 250, width: 10, height: 100 },
+        { x: 200, y: 150, width: 10, height: 100 }
       ];
 
       function drawLabyrinth() {
         lctx.clearRect(0, 0, 300, 400);
-        lctx.fillStyle = 'red';
-        lctx.beginPath();
-        lctx.arc(heart.x + 10, heart.y + 10, 10, 0, Math.PI * 2);
-        lctx.fill();
-
-        lctx.fillStyle = 'gold';
-        lctx.fillRect(gift.x, gift.y, gift.size, gift.size);
+        lctx.font = '30px Arial';
+        lctx.fillText(heart.emoji, heart.x, heart.y); // Рисуем сердце
+        lctx.fillText(gift.emoji, gift.x, gift.y); // Рисуем подарок
 
         lctx.fillStyle = 'black';
         // Отрисовка стен
