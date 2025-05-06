@@ -17,6 +17,7 @@
       position: relative;
     }
 
+    /* Анимация сердечек */
     .floating-heart {
       position: absolute;
       font-size: 24px;
@@ -40,6 +41,7 @@
       }
     }
 
+    /* Блок с контентом */
     #container {
       text-align: center;
       padding: 20px;
@@ -70,14 +72,18 @@
       cursor: pointer;
     }
 
+    /* Канвас для игры */
     canvas {
       display: block;
       background: #fff0f5;
       border: 2px solid #f06292;
       margin: 20px auto;
       border-radius: 10px;
+      position: relative;
+      z-index: 2; /* Канвас будет спереди */
     }
 
+    /* Таблица счета */
     #score-board {
       font-size: 18px;
       font-weight: bold;
@@ -120,6 +126,7 @@
   <script>
     let heartInterval;
 
+    // Функция создания сердечка
     function createFloatingHeart() {
       const heart = document.createElement('div');
       heart.classList.add('floating-heart');
@@ -131,14 +138,19 @@
       setTimeout(() => heart.remove(), 10000);
     }
 
+    // Запуск анимации
     function startHeartAnimation() {
       heartInterval = setInterval(createFloatingHeart, 500);
     }
 
+    // Остановка анимации
     function stopHeartAnimation() {
       clearInterval(heartInterval);
     }
   </script>
+
+  <!-- Фон для анимации сердечек -->
+  <div class="floating-heart" style="z-index: -2;"></div>
 
   <div id="container">
     <h2>Жаным, поздравляю тебя с 7 мая! ❤️</h2>
@@ -292,29 +304,4 @@
           if (nextCell === "$") {
             labyrinth.style.display = "none";
             finalScreen.style.display = "block";
-            startHeartAnimation(); // Запустить анимацию сердечек на финальном экране
-          }
-        }
-      }
-
-      window.addEventListener("keydown", (e) => {
-        switch (e.key) {
-          case "ArrowUp": movePlayer(0, -1); break;
-          case "ArrowDown": movePlayer(0, 1); break;
-          case "ArrowLeft": movePlayer(-1, 0); break;
-          case "ArrowRight": movePlayer(1, 0); break;
-        }
-      });
-
-      drawMaze();
-    }
-
-    showGiftBtn.addEventListener("click", function () {
-      giftHint.style.display = "block";
-    });
-
-    // Запустить анимацию сердечек на начальном экране
-    startHeartAnimation();
-  </script>
-</body>
-</html>
+            startHeartAnimation();
