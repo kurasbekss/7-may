@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Поздравление с 7 Мая ❤️</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&family=Open+Sans&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(to bottom, #ffe6eb, #fff);
+      color: #333;
+      text-align: center;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem;
+      color: #e91e63;
+    }
+    .btn {
+      background-color: #e91e63;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-top: 2rem;
+    }
+    .section {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .message {
+      font-size: 1.2rem;
+      margin: 1.5rem 0;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #e91e63;
+      transform: rotate(45deg);
+      animation: floatUp 10s linear infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #e91e63;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(1) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) scale(1.5) rotate(45deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+
+  <h1>Поздравление с 7 Мая ❤️</h1>
+  <div id="start" class="section active">
+    <p class="message">Готов к романтическому приключению? 💌</p>
+    <button class="btn" onclick="showSection('quiz')">Поехали!</button>
+  </div>
+
+  <div id="quiz" class="section">
+    <p class="message">Вопрос 1: Где мы впервые встретились?</p>
+    <button class="btn" onclick="nextQuestion('final')">На [правильный ответ]</button>
+  </div>
+
+  <div id="final" class="section">
+    <h2>🎉 Ты прошёл мой маленький квест!</h2>
+    <p class="message">Ты — моё уютное место в мире. Тот, кто умеет делать даже самый обычный день волшебным 🌟</p>
+    <p class="message">Ты — мой герой без плаща, хранитель моего смеха, вдохновитель моих мечт и просто самый лучший человек рядом 🫶</p>
+    <p class="message">Твой подарок немного задержался, но ждёт тебя в Алматы 🎁 Когда ты приедешь — тебя будет ждать нечто особенное!</p>
+    <p class="message">А пока — лови мою любовь через экран 💖</p>
+    <button class="btn" onclick="alert('🎁 Подсказка: этот подарок пахнет нежностью и звучит, как "ты лучший"')">Подсказка о подарке</button>
+  </div>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    function nextQuestion(nextId) {
+      showSection(nextId);
+    }
+
+    // Создание анимированных сердечек
+    const heartsContainer = document.getElementById('hearts');
+    setInterval(() => {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = 5 + Math.random() * 5 + 's';
+      heartsContainer.appendChild(heart);
+      setTimeout(() => heart.remove(), 10000);
+    }, 300);
+  </script>
+</body>
+</html>
