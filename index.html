@@ -85,12 +85,16 @@
 
   <div id="labyrinth">
     <h2>Протяни сердце к подарку 🎁</h2>
-    <canvas id="labyrinthCanvas" width="300" height="400"></canvas>
+    <div id="labyrinthCanvas" style="position:relative; width:300px; height:400px; background:#fff; border: 2px solid #f06292;">
+      <span id="heart" style="position:absolute; font-size:30px; left:10px; top:10px;">❤️</span>
+      <span id="gift" style="position:absolute; font-size:40px; left:140px; top:180px;">🎁</span>
+    </div>
   </div>
 
   <div id="final-screen">
     <h2>Ты молодец, прошёл все игры! 🎉</h2>
     <p class="message">Я в тебе не сомневалась. Твой подарок задерживается, но заберешь его в Алмате, как приедешь. 🎁</p>
+    <p class="message">Ты — невероятный человек, и каждый день с тобой — это праздник. Поздравляю тебя с этим особенным днем, и я счастлива, что могу быть рядом с тобой. С 7 мая, мой любимый! ❤️</p>
     <button id="show-gift-btn">Подсказка: что за подарок?</button>
     <p id="gift-hint" style="display:none;">Это то, в чём ты будешь отлично выглядеть в Париже, куда мы скоро собираемся. Жду нашей встречи ❤️</p>
   </div>
@@ -102,11 +106,12 @@
     const nextBtn = document.getElementById('next-btn');
     const labyrinthDiv = document.getElementById('labyrinth');
     const labyrinthCanvas = document.getElementById('labyrinthCanvas');
-    const lctx = labyrinthCanvas.getContext('2d');
     const finalScreen = document.getElementById('final-screen');
     const showGiftBtn = document.getElementById('show-gift-btn');
     const giftHint = document.getElementById('gift-hint');
     const scoreBoard = document.getElementById('score-board');
+    const heartElem = document.getElementById('heart');
+    const giftElem = document.getElementById('gift');
 
     let hearts = [], score = 0, animationId;
 
@@ -133,20 +138,11 @@
       scoreBoard.textContent = `Поймай 10 сердечек: ${score} ❤️`;
     }
 
-    function drawHeart(x, y, size) {
-      ctx.beginPath();
-      ctx.moveTo(x + size / 2, y);
-      ctx.bezierCurveTo(x + size / 2, y - size / 2, x, y - size, x - size / 2, y);
-      ctx.bezierCurveTo(x - size, y + size / 2, x + size / 2, y + size / 2, x + size / 2, y);
-      ctx.closePath();
-      ctx.fillStyle = 'red';
-      ctx.fill();
-    }
-
     function animateHearts() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (let h of hearts) {
-        drawHeart(h.x, h.y, h.size);
+        ctx.font = '30px Arial';
+        ctx.fillText('❤️', h.x, h.y);
         h.y += h.speed;
       }
       hearts = hearts.filter(h => h.y < canvas.height);
@@ -180,49 +176,56 @@
     function startLabyrinth() {
       nextBtn.style.display = 'none';
       labyrinthDiv.style.display = 'block';
-      drawLabyrinth();
+      document.addEventListener('keydown', moveHeart);
     }
 
-    let heart = { x: 10, y: 10, size: 20 };
-    const gift = { x: 140, y: 180, size: 40 };
+    let heartPos = { x: 10, y: 10 };
+    const walls = [
+      { x: 0, y: 0, width: 20, height: 400 },
+      { x: 0, y: 0, width: 300, height: 20 },
+      { x: 280, y: 0, width: 20, height: 400 },
+      { x: 0, y: 380, width: 300, height: 20 },
+      { x: 100, y: 100, width: 20, height: 200 },
+      { x: 200, y: 100, width: 20, height: 200 }
+    ];
 
-    function drawLabyrinth() {
-      lctx.clearRect(0, 0, 300, 400);
-      lctx.fillStyle = 'red';
-      lctx.beginPath();
-      lctx.arc(heart.x + 10, heart.y + 10, 10, 0, Math.PI * 2);
-      lctx.fill();
+    function moveHeart(e) {
+      const step = 10;
+      if (e.key === 'ArrowUp') heartPos.y -= step;
+      if (e.key === 'ArrowDown') heartPos.y += step;
+      if (e.key === 'ArrowLeft') heartPos.x -= step;
+      if (e.key === 'ArrowRight') heartPos.x += step;
 
-      lctx.fillStyle = 'gold';
-      lctx.fillRect(gift.x, gift.y, gift.size, gift.size);
-    }
-
-    labyrinthCanvas.addEventListener('mousedown', function (e) {
-      const rect = labyrinthCanvas.getBoundingClientRect();
-      const offsetX = e.clientX - rect.left - heart.x;
-      const offsetY = e.clientY - rect.top - heart.y;
-
-      function onMouseMove(e) {
-        heart.x = e.clientX - rect.left - offsetX;
-        heart.y = e.clientY - rect.top - offsetY;
-        drawLabyrinth();
-        if (
-          heart.x + heart.size > gift.x &&
-          heart.x < gift.x + gift.size &&
-          heart.y + heart.size > gift.y &&
-          heart.y < gift.y + gift.size
-        ) {
-          labyrinthDiv.style.display = 'none';
-          finalScreen.style.display = 'block';
-          labyrinthCanvas.removeEventListener('mousemove', onMouseMove);
-        }
+      if (!checkCollision()) {
+        heartElem.style.left = `${heartPos.x}px`;
+        heartElem.style.top = `${heartPos.y}px`;
       }
 
-      labyrinthCanvas.addEventListener('mousemove', onMouseMove);
-      labyrinthCanvas.addEventListener('mouseup', function () {
-        labyrinthCanvas.removeEventListener('mousemove', onMouseMove);
-      }, { once: true });
-    });
+      if (
+        heartPos.x + 30 > 140 &&
+        heartPos.x < 140 + 40 &&
+        heartPos.y + 30 > 180 &&
+        heartPos.y < 180 + 40
+      ) {
+        labyrinthDiv.style.display = 'none';
+        finalScreen.style.display = 'block';
+        document.removeEventListener('keydown', moveHeart);
+      }
+    }
+
+    function checkCollision() {
+      for (const wall of walls) {
+        if (
+          heartPos.x + 30 > wall.x &&
+          heartPos.x < wall.x + wall.width &&
+          heartPos.y + 30 > wall.y &&
+          heartPos.y < wall.y + wall.height
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     document.getElementById('start-btn').addEventListener('click', startGame);
     nextBtn.addEventListener('click', startLabyrinth);
