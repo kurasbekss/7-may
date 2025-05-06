@@ -215,4 +215,46 @@
           for (const wall of walls) {
             if (
               newX + heart.size > wall.x &&
-              newX < wall
+              newX < wall.x + wall.width &&
+              newY + heart.size > wall.y &&
+              newY < wall.y + wall.height
+            ) {
+              return;
+            }
+          }
+
+          heart.x = newX;
+          heart.y = newY;
+          drawLabyrinth();
+
+          if (
+            heart.x + heart.size > gift.x &&
+            heart.x < gift.x + gift.size &&
+            heart.y + heart.size > gift.y &&
+            heart.y < gift.y + gift.size
+          ) {
+            labyrinthDiv.style.display = 'none';
+            finalScreen.style.display = 'block';
+            labyrinthCanvas.removeEventListener('mousemove', onMouseMove);
+          }
+        }
+
+        labyrinthCanvas.addEventListener('mousemove', onMouseMove);
+        labyrinthCanvas.addEventListener('mouseup', function () {
+          labyrinthCanvas.removeEventListener('mousemove', onMouseMove);
+        }, { once: true });
+      });
+
+      drawLabyrinth();
+    }
+
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    nextBtn.addEventListener('click', startLabyrinth);
+    showGiftBtn.addEventListener('click', () => giftHint.style.display = 'block');
+    
+    window.onload = () => {
+      container.style.display = 'block';
+    };
+  </script>
+</body>
+</html>
