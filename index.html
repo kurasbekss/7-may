@@ -90,9 +90,20 @@
       margin-top: 20px;
       font-style: italic;
     }
-    #labyrinth-message {
-      font-size: 18px;
+
+    #labyrinthCanvas {
+      background: none;
+      border: none;
+    }
+
+    #gift-hint {
       margin-top: 20px;
+      font-style: italic;
+    }
+
+    #labyrinth-message {
+      margin-top: 20px;
+      font-size: 18px;
       font-weight: bold;
       color: #c2185b;
       text-align: center;
@@ -113,7 +124,7 @@
   <div id="labyrinth">
     <h2>Протяни сердце к подарку 🎁</h2>
     <canvas id="labyrinthCanvas" width="600" height="600"></canvas>
-    <div id="labyrinth-message">Найди подарок в лабиринте. Используй клавиши стрелок: вниз, влево, вправо, вверх.</div>
+    <div id="labyrinth-message">Найди подарок в лабиринте. Подведи сердце, используя клавиши стрелок</div>
   </div>
 
   <div id="final-screen">
@@ -231,45 +242,67 @@
             if (cell === "#") {
               lctx.fillStyle = "#c2185b";
               lctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-            } else if (cell === "$") {
-              lctx.font = "24px Arial";
-              lctx.fillText("🎁", x * tileSize + 5, y * tileSize + tileSize - 5);
+            }
+            if (cell === "@") {
+              lctx.fillStyle = "#ec407a";
+              lctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+            }
+            if (cell === "$") {
+              lctx.fillStyle = "#00c853";
+              lctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
           });
         });
-        lctx.fillText("❤️", player.x * tileSize + 5, player.y * tileSize + tileSize - 5);
+        lctx.fillStyle = "#ec407a";
+        lctx.fillRect(player.x * tileSize, player.y * tileSize, tileSize, tileSize);
       }
 
-      function movePlayer(dx, dy) {
-        const newX = player.x + dx;
-        const newY = player.y + dy;
-        const nextCell = maze[newY][newX];
-        if (nextCell !== "#") {
-          player.x = newX;
-          player.y = newY;
-          drawMaze();
-          if (nextCell === "$") {
-            labyrinth.style.display = "none";
-            finalScreen.style.display = "block";
-          }
+      function movePlayer(event) {
+        if (event.key === "ArrowUp" && maze[player.y - 1][player.x] !== "#") {
+          player.y--;
         }
+        if (event.key === "ArrowDown" && maze[player.y + 1][player.x] !== "#") {
+          player.y++;
+        }
+        if (event.key === "ArrowLeft" && maze[player.y][player.x - 1] !== "#") {
+          player.x--;
+        }
+        if (event.key === "ArrowRight" && maze[player.y][player.x + 1] !== "#") {
+          player.x++;
+        }
+        drawMaze();
       }
-
-      window.addEventListener("keydown", (e) => {
-        switch (e.key) {
-          case "ArrowUp": movePlayer(0, -1); break;
-          case "ArrowDown": movePlayer(0, 1); break;
-          case "ArrowLeft": movePlayer(-1, 0); break;
-          case "ArrowRight": movePlayer(1, 0); break;
-        }
-      });
 
       drawMaze();
+      window.addEventListener("keydown", movePlayer);
     }
 
     showGiftBtn.addEventListener("click", function () {
       giftHint.style.display = "block";
     });
+
+    // Функция для отображения анимации сердечек на финальной странице
+    function createFloatingHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('floating-heart');
+      heart.textContent = '❤️';
+      heart.style.left = `${Math.random() * 100}vw`;
+      heart.style.fontSize = `${Math.random() * 20 + 16}px`;
+      heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 10000);
+    }
+    let heartInterval;
+
+    function startHeartAnimation() {
+      heartInterval = setInterval(createFloatingHeart, 500);
+    }
+
+    function stopHeartAnimation() {
+      clearInterval(heartInterval);
+    }
+
+    finalScreen.addEventListener("display", startHeartAnimation);
   </script>
 </body>
 </html>
