@@ -46,7 +46,6 @@
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 600px;
-      display: none;
       z-index: 1;
     }
     h2 {
@@ -83,14 +82,6 @@
       display: none;
       text-align: center;
     }
-    #labyrinthCanvas {
-      position: relative;
-      width: 300px;
-      height: 400px;
-      background: #fff;
-      border: 2px solid #f06292;
-      margin: 20px auto;
-    }
     #final-screen {
       display: none;
       text-align: center;
@@ -112,12 +103,8 @@
       heart.style.fontSize = `${Math.random() * 20 + 16}px`;
       heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
       document.body.appendChild(heart);
-
-      setTimeout(() => {
-        heart.remove();
-      }, 10000);
+      setTimeout(() => heart.remove(), 10000);
     }
-
     setInterval(createFloatingHeart, 500);
   </script>
 
@@ -138,15 +125,158 @@
 
   <div id="final-screen">
     <h2>Ты молодец, прошёл все игры! 🎉</h2>
-    <p class="message">Я в тебе не сомневалась. Твой подарок немного задержался, но ты сможешь получить его в Алматы, когда приедешь🎁 А пока — лови мою любовь через экран 💖</p>
-    <p class="message">Ты — невероятный человек, и каждый день с тобой — это праздник. Поздравляю тебя с этим особенным днем, и я счастлива, что ты есть. Ты — мой защитник хорошего настроения, вдохновитель, и человек, рядом с которым мечты становятся планами. С 7 мая, жаным! ❤️</p>
+    <p class="message">Я в тебе не сомневалась. Твой подарок задерживается, но заберешь его в Алмате, как приедешь. 🎁</p>
+    <p class="message">Ты — невероятный человек, и каждый день с тобой — это праздник. Поздравляю тебя с этим особенным днем, и я счастлива, что ты есть. Ты — мой защитник хорошего настроения, вдохновитель, и человек, рядом с которым мечты становятся планами. Твой подарок немного задержался, но ты сможешь получить его в Алматы, когда приедешь. А пока — лови мою любовь через экран 💖 С 7 мая, жаным! ❤️</p>
     <button id="show-gift-btn">Подсказка: что за подарок?</button>
     <p id="gift-hint" style="display:none;">Это то, в чём ты будешь отлично выглядеть в Париже, куда мы скоро собираемся. Жду нашей встречи ❤️</p>
   </div>
 
-  <!-- Сюда подключён основной JS-код, без изменений -->
   <script>
-    // ... [весь ваш JavaScript код без изменений, как в исходном варианте] ...
+    const startBtn = document.getElementById("start-btn");
+    const container = document.getElementById("container");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreBoard = document.getElementById("score-board");
+    const nextBtn = document.getElementById("next-btn");
+    const labyrinth = document.getElementById("labyrinth");
+    const finalScreen = document.getElementById("final-screen");
+    const labyrinthCanvas = document.getElementById("labyrinthCanvas");
+    const lctx = labyrinthCanvas.getContext("2d");
+    const showGiftBtn = document.getElementById("show-gift-btn");
+    const giftHint = document.getElementById("gift-hint");
+
+    let hearts = [];
+    let score = 0;
+    let animationFrameId;
+
+    function createHeart() {
+      return {
+        x: Math.random() * canvas.width,
+        y: -20,
+        speed: Math.random() * 2 + 1,
+        size: 20,
+      };
+    }
+
+    function drawHeart(heart) {
+      ctx.font = `${heart.size}px Arial`;
+      ctx.fillText("❤️", heart.x, heart.y);
+    }
+
+    function updateGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hearts.forEach((heart, index) => {
+        heart.y += heart.speed;
+        drawHeart(heart);
+        if (heart.y > canvas.height) {
+          hearts.splice(index, 1);
+        }
+      });
+      animationFrameId = requestAnimationFrame(updateGame);
+    }
+
+    canvas.addEventListener("click", function (e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      hearts.forEach((heart, index) => {
+        if (
+          x > heart.x &&
+          x < heart.x + heart.size &&
+          y > heart.y - heart.size &&
+          y < heart.y
+        ) {
+          score++;
+          hearts.splice(index, 1);
+          scoreBoard.innerText = `Поймай 10 сердечек: ${score} ❤️`;
+          if (score >= 10) {
+            cancelAnimationFrame(animationFrameId);
+            canvas.style.display = "none";
+            scoreBoard.style.display = "none";
+            nextBtn.style.display = "block";
+          }
+        }
+      });
+    });
+
+    startBtn.addEventListener("click", function () {
+      container.style.display = "none";
+      scoreBoard.style.display = "block";
+      canvas.style.display = "block";
+      hearts = [];
+      score = 0;
+      scoreBoard.innerText = `Поймай 10 сердечек: ${score} ❤️`;
+      setInterval(() => hearts.push(createHeart()), 800);
+      updateGame();
+    });
+
+    nextBtn.addEventListener("click", function () {
+      nextBtn.style.display = "none";
+      labyrinth.style.display = "block";
+      startLabyrinthGame();
+    });
+
+    function startLabyrinthGame() {
+      const maze = [
+        "####################",
+        "#@       #        $#",
+        "# ####### ####### ##",
+        "#                 ##",
+        "# ####### ####### ##",
+        "# ####### ####### ##",
+        "#                 ##",
+        "####################",
+      ];
+      const tileSize = 15;
+      let player = { x: 1, y: 1 };
+
+      function drawMaze() {
+        lctx.clearRect(0, 0, labyrinthCanvas.width, labyrinthCanvas.height);
+        maze.forEach((row, y) => {
+          [...row].forEach((cell, x) => {
+            if (cell === "#") {
+              lctx.fillStyle = "#c2185b";
+              lctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+            } else if (cell === "$") {
+              lctx.font = "14px Arial";
+              lctx.fillText("🎁", x * tileSize, y * tileSize + tileSize);
+            }
+          });
+        });
+        lctx.fillText("❤️", player.x * tileSize, player.y * tileSize + tileSize);
+      }
+
+      function movePlayer(dx, dy) {
+        const newX = player.x + dx;
+        const newY = player.y + dy;
+        const nextCell = maze[newY][newX];
+        if (nextCell !== "#") {
+          player.x = newX;
+          player.y = newY;
+          drawMaze();
+          if (nextCell === "$") {
+            labyrinth.style.display = "none";
+            finalScreen.style.display = "block";
+          }
+        }
+      }
+
+      window.addEventListener("keydown", (e) => {
+        switch (e.key) {
+          case "ArrowUp": movePlayer(0, -1); break;
+          case "ArrowDown": movePlayer(0, 1); break;
+          case "ArrowLeft": movePlayer(-1, 0); break;
+          case "ArrowRight": movePlayer(1, 0); break;
+        }
+      });
+
+      drawMaze();
+    }
+
+    showGiftBtn.addEventListener("click", function () {
+      giftHint.style.display = "block";
+    });
   </script>
 </body>
 </html>
